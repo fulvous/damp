@@ -1,0 +1,60 @@
+version: '3.7'
+
+services:
+  project_prod_db:
+    image: postgres:12.1
+    restart: always
+    container_name: project_prod_db
+    env_file: .env.prod
+    volumes:
+      - /var/lib/postgresql/project-prod-docker:/var/lib/postgresql/data
+    networks:
+      project_prod_net:
+        ipv4_address: 10.30.0.2
+
+  project_prod_web:
+    build:
+      context: ../../../
+      dockerfile: ./Dockerfile
+    command: bash -c "python manage.py collectstatic --no-input;
+      python manage.py makemigrations;
+      python manage.py migrate;
+      gunicorn project_py.wsgi:application -b 0.0.0.0:8000"
+    volumes:
+      - ../../../web/staticfiles:/code/staticfiles
+    image: project-prod-web:1.0
+    restart: always
+    container_name: project_prod_web
+    links:
+      - project_prod_db:postgres
+    depends_on:
+      - project_prod_db
+    networks:
+      project_prod_net:
+        ipv4_address: 10.30.0.3
+  project_prod_nginx:
+    container_name: project_prod_nginx
+    restart: always
+    ports:
+      - 8000:80
+    image: nginx:1.17.8-alpine
+    volumes:
+      - ../../../web/staticfiles:/src/staticfiles
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      project_prod_net:
+        ipv4_address: 10.30.0.4
+    depends_on:
+      - project_prod_web
+
+volumes:
+  staticfiles:
+
+networks:
+  project_prod_net:
+    name: project_prod_net
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.30.0.0/29
+

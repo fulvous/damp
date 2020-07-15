@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  ejemx_dev_db:
+    image: mysql:8.0
+    container_name: ejemx_dev_db
+    env_file: .env.dev
+    volumes:
+      - /var/lib/mysql/ejemx-dev-docker:/var/lib/mysql
+    networks:
+      project_dev_net:
+        ipv4_address: 10.26.0.2
+
+  ejemx_dev_web:
+    build:
+      context: ../../../
+      dockerfile: ./Dockerfile
+    container_name: ejemx_dev_web
+    volumes:
+      - ../../../src:/var/www/html
+    depends_on:
+      - ejemx_dev_db
+    networks:
+      ejemx_dev_net:
+        ipv4_address: 10.26.0.3
+
+networks:
+  ejemx_dev_net:
+    name: ejemx_dev_net
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.26.0.0/29
+

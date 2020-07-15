@@ -1,0 +1,68 @@
+#!/bin/bash
+
+#herramientax Apoya a la generacion de scripts en espanol
+#Copyright (C) 2017 Leon Ramos @fulvous
+#
+#Este archivo es parte de herramientax
+#
+#herramientax es software libre: Puede redistribuirlo y/o 
+#modificarlo bajo los terminos de la Licencia de uso publico 
+#general GNU de la Fundacion de software libre, ya sea la
+#version 3 o superior de la licencia.
+#
+#herramientax es distribuida con la esperanza de que sera util,
+#pero sin ningun tipo de garantia; inclusive sin la garantia
+#implicita de comercializacion o para un uso particular.
+#Vea la licencia de uso publico general GNU para mas detalles.
+#
+#Deberia de recibir uan copia de la licencia de uso publico
+#general junto con herramientax, de lo contrario, vea
+#<http://www.gnu.org/licenses/>.
+#
+#This file is part of herramientax
+#
+#herramientax is free software: you can redistribute it and/or 
+#modify it under the terms of the GNU General Public License 
+#as published by the Free Software Foundation, either version 3 
+#of the License, or any later version.
+#
+#herramientax is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with herramientax  If not, see 
+#<http://www.gnu.org/licenses/>.
+
+set -e
+
+source formato/colores.sh
+source formato/dialogos.sh
+
+informa "Creando biblioteca" "herramientax" "espere..."
+
+PWD_F=$( pwd )
+
+echo "#!/bin/bash" > herramientax
+
+for folder in $( find ${PWD_F} -type d 2>/dev/null | egrep -v '\.git' ) ; do
+  for archivo in $( ls ${folder} | egrep -v 'test.sh' | egrep '\.sh$' ) ; do
+    echo "source ${folder}/${archivo}"
+    echo "source ${folder}/${archivo}" >> herramientax
+  done
+done
+
+res_ok "Importador creado" "herramientax" "Exitoso"
+
+chmod 755 herramientax
+
+res_ok "Permisos agregados" "ejecucion" "Exitoso"
+
+cat <<EOT | fmt -
+
+Biblioteca herramientax lista, puedes importarla desde cualquier ubicacion asi:
+
+source ruta/herramientax/herramientax
+
+EOT
