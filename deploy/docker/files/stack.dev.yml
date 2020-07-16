@@ -2,7 +2,9 @@ version: '3.7'
 
 services:
   ejemx_dev_db:
-    image: mysql:8.0
+    build:
+      context: ../../../
+      dockerfile: ./Dockerfile.mysql
     container_name: ejemx_dev_db
     env_file: .env.dev
     volumes:
@@ -14,7 +16,7 @@ services:
   ejemx_dev_web:
     build:
       context: ../../../
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.php
     container_name: ejemx_dev_web
     volumes:
       - ../../../src:/var/www/html
@@ -23,6 +25,14 @@ services:
     networks:
       ejemx_dev_net:
         ipv4_address: 10.28.0.3
+
+  eje_dev_phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: ejemx_dev_phpmyadmin
+    env_file: .env.dev.phpmyadmin
+    networks:
+      ejemx_dev_net:
+        ipv4_address: 10.28.0.4
 
 networks:
   ejemx_dev_net:

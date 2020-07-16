@@ -1,0 +1,6 @@
+FROM mysql:8.0
+RUN echo "default-authentication-plugin=mysql_native_password" >> /etc/mysql/conf.d/docker.cnf
+COPY ./deploy/docker/files/alter.sh /bin/alter.sh
+RUN chmod 755 /bin/alter.sh
+VOLUME /var/lib/mysql
+CMD ["mysqld"]
