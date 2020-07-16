@@ -6,7 +6,7 @@ services:
       context: ../../../
       dockerfile: ./Dockerfile.mysql
     container_name: ejemx_dev_db
-    env_file: .env.dev
+    env_file: .env.dev.mysql
     volumes:
       - /var/lib/mysql/ejemx-dev-docker:/var/lib/mysql
     networks:
